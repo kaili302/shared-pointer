@@ -66,19 +66,20 @@ template <typename T>
 SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr& src)
 {
     // prevent self assignment
-    if (this == &src)
-        return *this;
-        
-    if (d_refCounter->decrease() == 0)
+    if (this != &src)
     {
-        std::cout << "delete ptr @" << d_ptr << std::endl;
-        delete d_ptr;
-        delete d_refCounter;
+        if (d_refCounter->decrease() == 0)
+        {
+            std::cout << "delete ptr @" << d_ptr << std::endl;
+            delete d_ptr;
+            delete d_refCounter;
+        }
+        
+        d_ptr = src.d_ptr;
+        d_refCounter = src.d_refCounter;
+        d_refCounter->increase();
     }
-    
-    d_ptr = src.d_ptr;
-    d_refCounter = src.d_refCounter;
-    d_refCounter->increase();
+    return *this;
 }
 
 template <typename T>
